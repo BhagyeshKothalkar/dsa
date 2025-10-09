@@ -10,8 +10,8 @@ private:
 
   // Helper functions for array indexing (using 0-based indexing)
   int parent(int i) { return (i - 1) / 2; }
-  int leftChild(int i) { return (2 * i) + 1; }
-  int rightChild(int i) { return (2 * i) + 2; }
+  int left(int i) { return (2 * i) + 1; }
+  int right(int i) { return (2 * i) + 2; }
 
   // Helper functions to restore the heap property
   void heapifyUp(int index);   //  Moves a node up
@@ -85,8 +85,8 @@ template <typename T> T MaxHeap<T>::extractMax() {
 
 template <typename T> void MaxHeap<T>::heapifyDown(int index) {
   int largest = index;
-  int left = leftChild(index);
-  int right = rightChild(index);
+  int left = left(index);
+  int right = right(index);
 
   // Check if left child exists and is greater than the current largest
   if (left < m_size && m_arr[left] > m_arr[largest]) {
