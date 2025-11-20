@@ -1,39 +1,36 @@
 #include <iostream>
 #include <stdexcept>
 #include <initializer_list>
-#include <string>
 
 template <typename T>
 class ArrQueue {
 private:
     T* m_arr;
     std::size_t m_max_size;
-    std::size_t m_l; // Index of the first element
-    std::size_t m_r; // Index for the next insertion
+    std::size_t m_l; 
+    std::size_t m_r;
 
 public:
-    // FIX: Default constructor now creates a queue with a default capacity.
+
     ArrQueue(std::size_t capacity = 16);
     ArrQueue(std::initializer_list<T> data);
     ~ArrQueue();
 
-    // FIX: Added copy constructor and assignment operator to prevent shallow copies.
     ArrQueue(const ArrQueue& other);
     ArrQueue& operator=(const ArrQueue& other);
 
-    std::size_t size() const; // Made const-correct
+    std::size_t size() const; 
     void enqueue(const T& val);
     void dequeue();
 
-    T front() const; // Made const-correct
-    T rear() const;  // Made const-correct
+    T front() const;
+    T rear() const;
 
-    bool full() const;   // Made const-correct
-    bool empty() const;  // Made const-correct
-    void display() const; // Made const-correct
+    bool full() const;  
+    bool empty() const;
+    void display() const; 
 };
 
-// --- Implementations ---
 
 template <typename T>
 ArrQueue<T>::ArrQueue(std::size_t capacity)
@@ -57,7 +54,6 @@ ArrQueue<T>::~ArrQueue() {
     delete[] m_arr;
 }
 
-// Copy constructor for deep copy
 template <typename T>
 ArrQueue<T>::ArrQueue(const ArrQueue& other)
     : m_max_size(other.m_max_size), m_l(other.m_l), m_r(other.m_r) {
@@ -67,11 +63,10 @@ ArrQueue<T>::ArrQueue(const ArrQueue& other)
     }
 }
 
-// Copy assignment operator for deep copy
 template <typename T>
 ArrQueue<T>& ArrQueue<T>::operator=(const ArrQueue& other) {
     if (this == &other) return *this;
-    delete[] m_arr; // Free old memory
+    delete[] m_arr; 
     m_max_size = other.m_max_size;
     m_l = other.m_l;
     m_r = other.m_r;
@@ -113,14 +108,12 @@ bool ArrQueue<T>::empty() const {
 
 template <typename T>
 T ArrQueue<T>::front() const {
-    // FIX: Check for empty queue before access.
     if (empty()) throw std::out_of_range("Queue is empty.");
     return m_arr[m_l];
 }
 
 template <typename T>
 T ArrQueue<T>::rear() const {
-    // FIX: Check for empty queue and use safe modulo arithmetic.
     if (empty()) throw std::out_of_range("Queue is empty.");
     return m_arr[(m_r - 1 + m_max_size) % m_max_size];
 }
@@ -138,3 +131,7 @@ void ArrQueue<T>::display() const {
     }
     std::cout << std::endl;
 }
+
+
+
+

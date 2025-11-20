@@ -3,10 +3,8 @@
 #include <stdexcept>
 #include <string>
 
-// Forward declaration for the friend function
 template <typename T> class CircSinglyLL;
 
-// Friend function to allow `cout << list;`
 template <typename T>
 std::ostream &operator<<(std::ostream &os, const CircSinglyLL<T> &list);
 
@@ -18,24 +16,20 @@ private:
     Node(T data) : m_data(data), m_next(nullptr) {}
   };
 
-  // Using a tail pointer is more efficient for circular lists.
-  // The head is always accessible via `m_tail->m_next`.
   Node *m_tail;
   size_t m_size;
 
-  // Private helpers for Merge Sort
   Node *mergeSort(Node *head);
   Node *getMiddle(Node *head);
   Node *sortedMerge(Node *left, Node *right);
 
 public:
-  // --- Rule of Three/Five: Essential for memory management ---
+
   CircSinglyLL();
   ~CircSinglyLL();
   CircSinglyLL(const CircSinglyLL &other);
   CircSinglyLL<T> &operator=(const CircSinglyLL &other);
 
-  // --- Accessors (front() and back() are O(1)) ---
   T &front();
   const T &front() const;
   T &at(size_t pos);
@@ -43,17 +37,15 @@ public:
   T &back();
   const T &back() const;
 
-  // --- Modifiers (push_front() and push_back() are O(1)) ---
   void push_back(T data);
   void push_front(T data);
   void insert_at(T data, size_t pos);
   void pop_front();
-  void pop_back(); // O(n) operation
+  void pop_back(); 
   void pop_at(size_t pos);
   void pop_val(T val);
   void reverse();
 
-  // --- Utility ---
   size_t find(T val) const;
   size_t size() const;
   bool isempty() const;
@@ -78,7 +70,7 @@ CircSinglyLL<T>::CircSinglyLL(const CircSinglyLL &other)
     : m_tail(nullptr), m_size(0) {
   if (other.isempty())
     return;
-  Node *current = other.m_tail->m_next; // Start at other's head
+  Node *current = other.m_tail->m_next; 
   for (size_t i = 0; i < other.m_size; ++i) {
     push_back(current->m_data);
     current = current->m_next;
@@ -101,8 +93,6 @@ CircSinglyLL<T> &CircSinglyLL<T>::operator=(const CircSinglyLL &other) {
   }
   return *this;
 }
-
-// --- Accessors ---
 
 template <typename T> T &CircSinglyLL<T>::front() {
   if (isempty())
@@ -141,16 +131,14 @@ template <typename T> const T &CircSinglyLL<T>::at(size_t pos) const {
   return const_cast<CircSinglyLL<T> *>(this)->at(pos);
 }
 
-// --- Modifiers ---
-
 template <typename T> void CircSinglyLL<T>::push_front(T data) {
   Node *newNode = new Node(data);
   if (isempty()) {
     m_tail = newNode;
-    m_tail->m_next = m_tail; // Point to itself
+    m_tail->m_next = m_tail; 
   } else {
-    newNode->m_next = m_tail->m_next; // New node points to old head
-    m_tail->m_next = newNode;         // Tail points to new head
+    newNode->m_next = m_tail->m_next; 
+    m_tail->m_next = newNode;         
   }
   m_size++;
 }
@@ -158,7 +146,7 @@ template <typename T> void CircSinglyLL<T>::push_front(T data) {
 template <typename T> void CircSinglyLL<T>::push_back(T data) {
   push_front(data);
   if (m_size > 1) {
-    m_tail = m_tail->m_next; // The new node becomes the new tail
+    m_tail = m_tail->m_next; 
   }
 }
 
@@ -174,7 +162,7 @@ template <typename T> void CircSinglyLL<T>::insert_at(T data, size_t pos) {
     return;
   }
 
-  Node *prev = m_tail->m_next; // Start at head
+  Node *prev = m_tail->m_next; 
   for (size_t i = 0; i < pos - 1; ++i) {
     prev = prev->m_next;
   }
@@ -192,7 +180,7 @@ template <typename T> void CircSinglyLL<T>::pop_front() {
     m_tail = nullptr;
   } else {
     Node *oldHead = m_tail->m_next;
-    m_tail->m_next = oldHead->m_next; // Tail points to the new head
+    m_tail->m_next = oldHead->m_next;
     delete oldHead;
   }
   m_size--;
@@ -206,14 +194,13 @@ template <typename T> void CircSinglyLL<T>::pop_back() {
     return;
   }
 
-  // O(n) traversal to find the node before the tail
   Node *prev = m_tail->m_next;
   while (prev->m_next != m_tail) {
     prev = prev->m_next;
   }
-  prev->m_next = m_tail->m_next; // New tail points to head
+  prev->m_next = m_tail->m_next; 
   delete m_tail;
-  m_tail = prev; // Update tail pointer
+  m_tail = prev; 
   m_size--;
 }
 
@@ -260,11 +247,9 @@ template <typename T> void CircSinglyLL<T>::reverse() {
     prev = current;
     current = next_node;
   }
-  // The original head is the new tail
   m_tail = current;
 }
 
-// --- Utility ---
 
 template <typename T> size_t CircSinglyLL<T>::find(T val) const {
   if (isempty())
@@ -275,7 +260,7 @@ template <typename T> size_t CircSinglyLL<T>::find(T val) const {
       return i;
     current = current->m_next;
   }
-  return m_size; // Not found
+  return m_size;
 }
 
 template <typename T> size_t CircSinglyLL<T>::size() const { return m_size; }
@@ -302,21 +287,16 @@ std::ostream &operator<<(std::ostream &os, const CircSinglyLL<T> &list) {
   return os;
 }
 
-// --- Merge Sort ---
-// Implemented by temporarily breaking the circle, sorting, and re-linking
 
 template <typename T> void CircSinglyLL<T>::sort() {
   if (m_size < 2)
     return;
 
-  // 1. Break the circle to form a linear list
   Node *head = m_tail->m_next;
   m_tail->m_next = nullptr;
 
-  // 2. Sort the linear list using the standard merge sort
   head = mergeSort(head);
 
-  // 3. Find the new tail and re-link the circle
   m_tail = head;
   while (m_tail->m_next != nullptr) {
     m_tail = m_tail->m_next;
@@ -324,7 +304,6 @@ template <typename T> void CircSinglyLL<T>::sort() {
   m_tail->m_next = head;
 }
 
-// The following helpers are identical to the SinglyLinkedList version
 template <typename T>
 typename CircSinglyLL<T>::Node *CircSinglyLL<T>::mergeSort(Node *head) {
   if (!head || !head->m_next)

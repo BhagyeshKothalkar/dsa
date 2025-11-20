@@ -1,41 +1,37 @@
-#include <algorithm> // For std::max
-#include <climits>   // For INT_MIN, INT_MAX
+#include <algorithm> 
+#include <climits>  
 #include <iostream>
-#include <stdexcept> // For exceptions
+#include <stdexcept>
 #include <initializer_list>
-#include <string>
 
 template <typename T>
 class ArrQueue {
 private:
     T* m_arr;
     std::size_t m_max_size;
-    std::size_t m_l; // Index of the first element
-    std::size_t m_r; // Index for the next insertion
+    std::size_t m_l; 
+    std::size_t m_r;
 
 public:
-    // FIX: Default constructor now creates a queue with a default capacity.
     ArrQueue(std::size_t capacity = 16);
     ArrQueue(std::initializer_list<T> data);
     ~ArrQueue();
 
-    // FIX: Added copy constructor and assignment operator to prevent shallow copies.
     ArrQueue(const ArrQueue& other);
     ArrQueue& operator=(const ArrQueue& other);
 
-    std::size_t size() const; // Made const-correct
+    std::size_t size() const; 
     void enqueue(const T& val);
     void dequeue();
 
-    T front() const; // Made const-correct
-    T rear() const;  // Made const-correct
+    T front() const; 
+    T rear() const; 
 
-    bool full() const;   // Made const-correct
-    bool empty() const;  // Made const-correct
-    void display() const; // Made const-correct
+    bool full() const;
+    bool empty() const;
+    void display() const;
 };
 
-// --- Implementations ---
 
 template <typename T>
 ArrQueue<T>::ArrQueue(std::size_t capacity)
@@ -59,7 +55,6 @@ ArrQueue<T>::~ArrQueue() {
     delete[] m_arr;
 }
 
-// Copy constructor for deep copy
 template <typename T>
 ArrQueue<T>::ArrQueue(const ArrQueue& other)
     : m_max_size(other.m_max_size), m_l(other.m_l), m_r(other.m_r) {
@@ -69,11 +64,10 @@ ArrQueue<T>::ArrQueue(const ArrQueue& other)
     }
 }
 
-// Copy assignment operator for deep copy
 template <typename T>
 ArrQueue<T>& ArrQueue<T>::operator=(const ArrQueue& other) {
     if (this == &other) return *this;
-    delete[] m_arr; // Free old memory
+    delete[] m_arr; 
     m_max_size = other.m_max_size;
     m_l = other.m_l;
     m_r = other.m_r;
@@ -115,14 +109,12 @@ bool ArrQueue<T>::empty() const {
 
 template <typename T>
 T ArrQueue<T>::front() const {
-    // FIX: Check for empty queue before access.
     if (empty()) throw std::out_of_range("Queue is empty.");
     return m_arr[m_l];
 }
 
 template <typename T>
 T ArrQueue<T>::rear() const {
-    // FIX: Check for empty queue and use safe modulo arithmetic.
     if (empty()) throw std::out_of_range("Queue is empty.");
     return m_arr[(m_r - 1 + m_max_size) % m_max_size];
 }
@@ -144,7 +136,6 @@ void ArrQueue<T>::display() const {
 
 template <typename T> class BST {
 private:
-  // The basic building block of the tree
   struct Node {
     T key;
     Node *left;
@@ -154,7 +145,6 @@ private:
 
   Node *m_root;
 
-  // Helper for inserting a key
   Node *insert(Node *node, T key) {
     if (node == nullptr) {
       return new Node(key);
@@ -164,10 +154,9 @@ private:
     } else if (key > node->key) {
       node->right = insert(node->right, key);
     }
-    return node; // Return the unchanged node pointer
+    return node;
   }
 
-  // Helper for removing a key
   Node *remove(Node *node, T key) {
     if (node == nullptr)
       return node;
@@ -176,8 +165,8 @@ private:
       node->left = remove(node->left, key);
     } else if (key > node->key) {
       node->right = remove(node->right, key);
-    } else { // Key found
-      // Case 1 & 2: Node with one or no child
+    } else { 
+
       if (node->left == nullptr) {
         Node *temp = node->right;
         delete node;
@@ -187,7 +176,7 @@ private:
         delete node;
         return temp;
       }
-      // Case 3: Node with two children
+
       Node *temp = findMinNode(node->right);
       node->key = temp->key;
       node->right = remove(node->right, temp->key);
@@ -195,7 +184,7 @@ private:
     return node;
   }
 
-  // Helper for searching for a key
+
   bool search(Node *node, T key) const {
     if (node == nullptr) {
       return false;
@@ -210,7 +199,7 @@ private:
     }
   }
 
-  // Traversal helpers
+
   void preorder(Node *node) const {
     if (node == nullptr)
       return;
@@ -235,15 +224,15 @@ private:
     std::cout << node->key << " ";
   }
 
-  // Helper to calculate height of a subtree
+
   int height(Node *node) const {
     if (node == nullptr) {
-      return -1; // Height of an empty tree is -1
+      return -1; 
     }
     return 1 + std::max(height(node->left), height(node->right));
   }
 
-  // Helper to find depth of a given node
+  
   int depth(Node *current, Node *target_node, int d) const {
     if (current == nullptr)
       return -1; // Not found
@@ -257,7 +246,7 @@ private:
     return depth(current->right, target_node, d + 1);
   }
 
-  // Helper to validate the BST property
+
   bool checkBST(Node *node, T minVal, T maxVal) const {
     if (node == nullptr)
       return true;
@@ -268,7 +257,7 @@ private:
            checkBST(node->right, node->key, maxVal);
   }
 
-  // Helper to find the node with the minimum key in a subtree
+
   Node *findMinNode(Node *node) const {
     while (node && node->left != nullptr) {
       node = node->left;
@@ -276,7 +265,7 @@ private:
     return node;
   }
 
-  // Helper to find the node with the maximum key in a subtree
+
   Node *findMaxNode(Node *node) const {
     while (node && node->right != nullptr) {
       node = node->right;
@@ -284,7 +273,7 @@ private:
     return node;
   }
 
-  // Helper to clean up memory
+
   void destroyTree(Node *node) {
     if (node) {
       destroyTree(node->left);
@@ -294,16 +283,16 @@ private:
   }
 
 public:
-  // Constructor
+
   BST() : m_root(nullptr) {}
 
-  // Destructor
+
   ~BST() { destroyTree(m_root); }
 
-  // Public getter for the root (useful for some algorithms)
+
   Node *getRoot() const { return m_root; }
 
-  // =========== PUBLIC INTERFACE ===========
+
 
   void insert(T key) { m_root = insert(m_root, key); }
   void remove(T key) { m_root = remove(m_root, key); }
@@ -328,7 +317,6 @@ public:
       return;
     }
 
-    // Use your custom ArrQueue to hold Node pointers
     ArrQueue<Node *> q(100);
 
     q.enqueue(m_root);
@@ -351,7 +339,7 @@ public:
 
   int height() const { return height(m_root); }
 
-  // Depth of a specific node pointer
+
   int depth(Node *target_node) const { return depth(m_root, target_node, 0); }
 
   T minimum() const {
@@ -375,10 +363,10 @@ public:
     Node *curr = m_root;
     Node *successor = nullptr;
 
-    // 1. Search for the node with the given key
+
     while (curr != nullptr && curr->key != key) {
       if (key < curr->key) {
-        successor = curr; // This is a potential successor
+        successor = curr; 
         curr = curr->left;
       } else {
         curr = curr->right;
@@ -386,14 +374,14 @@ public:
     }
 
     if (curr == nullptr)
-      return nullptr; // Key not found
+      return nullptr; 
 
-    // 2. If a right subtree exists, find its minimum
+
     if (curr->right != nullptr) {
       return findMinNode(curr->right);
     }
 
-    // 3. Otherwise, the successor is the last ancestor we turned left from
+    
     return successor;
   }
 };
